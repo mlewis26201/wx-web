@@ -3,7 +3,25 @@ import sqlite3
 import os
 
 app = Flask(__name__, static_folder=None)
-DB_PATH = os.getenv("SQLITE_PATH", "/data/weather.db")
+DB_PATH = os.environ.get('SQLITE_PATH', '/data/weather.db')
+SECRETS_PATH = '/run/secrets/wx-web-frontend.secrets'
+
+# Load NOAA Radar and port from Docker secrets
+def load_frontend_secrets():
+    secrets = {'NOAA_Radar': 'KMVX', 'FRONTEND_PORT': '8080'}
+    try:
+        with open(SECRETS_PATH) as f:
+            for line in f:
+                if '=' in line:
+                    k, v = line.strip().split('=', 1)
+                    secrets[k] = v
+    except Exception as e:
+        print(f"Could not load frontend secrets: {e}")
+    return secrets
+
+FRONTEND_SECRETS = load_frontend_secrets()
+NOAA_Radar = FRONTEND_SECRETS['NOAA_Radar']
+FRONTEND_PORT = int(FRONTEND_SECRETS['FRONTEND_PORT'])
 
 def get_latest_row():
     conn = sqlite3.connect(DB_PATH)
@@ -34,11 +52,10 @@ def get_averages(field, hours):
 def index():
     import sys
     print("Index route called from web_frontend/app.py", file=sys.stderr, flush=True)  # Test print statement with flush
-    radar_station = os.getenv("NOAA_Radar", "KMVX")
     latest_data = get_latest_row()
     latest_timestamp = latest_data.get("timestamp", "Unknown")
     print(f"Latest timestamp: {latest_timestamp}", file=sys.stderr, flush=True)  # Debugging line with flush
-    return render_template("index.html", radar_station=radar_station, latest_timestamp=latest_timestamp)
+    return render_template("index.html", radar_station=NOAA_Radar, latest_timestamp=latest_timestamp)
 
 @app.route("/api/latest")
 def api_latest():
@@ -94,4 +111,4 @@ def favicon_root():
     return send_from_directory('/data/static', 'favicon.svg')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=FRONTEND_PORT)

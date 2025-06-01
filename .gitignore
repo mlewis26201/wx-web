@@ -2,3 +2,7 @@
 /data/weather.db
 # Ignore Docker secrets for wx-web-alerter
 wx-web-alerter.secrets
+# Ignore Docker secrets for wx-web-backend
+wx-web-backend.secrets
+# Ignore Docker secrets for wx-web-frontend
+wx-web-frontend.secrets

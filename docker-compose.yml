@@ -8,14 +8,11 @@ services:
     working_dir: /app
     command: python -u wx-web-backend/app/mqtt_to_db.py
     environment:
-      - MQTT_BROKER_HOST=mqtt.local
-      - MQTT_BROKER_PORT=1883
-      - MQTT_BROKER_USER=mqtt
-      - MQTT_BROKER_PASSWORD=YOUR_PASSWORD
-      - MQTT_TOPIC=weather/loop
       - SQLITE_PATH=/data/weather.db
     volumes:
       - ./data:/data:rw
+    secrets:
+      - wx-web-backend-secrets
     restart: unless-stopped
   wx-web-graph-generator:
     build:
@@ -39,11 +36,12 @@ services:
     command: python -u wx-web-frontend/app.py
     environment:
       - SQLITE_PATH=/data/weather.db
-      - NOAA_Radar=KMVX
     volumes:
       - ./data:/data:rw
+    secrets:
+      - wx-web-frontend-secrets
     ports:
-      - "8080:8080"
+      - "${FRONTEND_PORT:-8080}:8080"
     restart: unless-stopped
   wx-web-explorer:
     build:
@@ -75,5 +73,9 @@ services:
     restart: unless-stopped
 
 secrets:
+  wx-web-backend-secrets:
+    file: wx-web-backend.secrets
   wx-web-alerter-secrets:
     file: wx-web-alerter.secrets
+  wx-web-frontend-secrets:
+    file: wx-web-frontend.secrets

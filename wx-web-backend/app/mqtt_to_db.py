@@ -5,12 +5,29 @@ from datetime import datetime
 from paho.mqtt import client as mqtt_client
 
 # Config
-MQTT_BROKER = os.getenv("MQTT_BROKER_HOST", "mqtt.local")
-MQTT_PORT = int(os.getenv("MQTT_BROKER_PORT", 1883))
-MQTT_USER = os.getenv("MQTT_BROKER_USER", None)
-MQTT_PASSWORD = os.getenv("MQTT_BROKER_PASSWORD", None)
-MQTT_TOPIC = os.getenv("MQTT_TOPIC", "weather/loop")
-DB_PATH = os.getenv("SQLITE_PATH", "/data/weather.db")
+DB_PATH = os.environ.get('SQLITE_PATH', '/data/weather.db')
+SECRETS_PATH = '/run/secrets/wx-web-backend.secrets'
+
+# Load MQTT secrets from Docker secrets
+def load_mqtt_secrets():
+    secrets = {}
+    try:
+        with open(SECRETS_PATH) as f:
+            for line in f:
+                if '=' in line:
+                    k, v = line.strip().split('=', 1)
+                    secrets[k] = v
+    except Exception as e:
+        print(f"Could not load secrets: {e}")
+    return secrets
+
+MQTT = load_mqtt_secrets()
+
+MQTT_BROKER = MQTT.get("MQTT_BROKER_HOST", "mqtt.local")
+MQTT_PORT = int(MQTT.get("MQTT_BROKER_PORT", 1883))
+MQTT_USER = MQTT.get("MQTT_BROKER_USER", None)
+MQTT_PASSWORD = MQTT.get("MQTT_BROKER_PASSWORD", None)
+MQTT_TOPIC = MQTT.get("MQTT_TOPIC", "weather/loop")
 
 # Friendly names mapping for weather fields
 FRIENDLY_NAMES = {
