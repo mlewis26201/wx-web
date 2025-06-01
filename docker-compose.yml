@@ -15,7 +15,7 @@ services:
       - MQTT_TOPIC=weather/loop
       - SQLITE_PATH=/data/weather.db
     volumes:
-      - /docker_data/wx-web/data:/data:rw
+      - ./data:/data:rw
     restart: unless-stopped
   wx-web-graph-generator:
     build:
@@ -28,7 +28,7 @@ services:
       - SQLITE_PATH=/data/weather.db
       - STATIC_DIR=/data/static
     volumes:
-      - /docker_data/wx-web/data:/data:rw
+      - ./data:/data:rw
     restart: unless-stopped
   wx-web-frontend:
     build:
@@ -41,7 +41,7 @@ services:
       - SQLITE_PATH=/data/weather.db
       - NOAA_Radar=KMVX
     volumes:
-      - /docker_data/wx-web/data:/data:rw
+      - ./data:/data:rw
     ports:
       - "8080:8080"
     restart: unless-stopped
@@ -55,7 +55,5 @@ services:
     environment:
       - SQLITE_PATH=/data/weather.db
     volumes:
-      - /docker_data/wx-web/data:/data:rw
-    ports:
-      - "8081:8081"
+      - ./data:/data:rw
     restart: unless-stopped
