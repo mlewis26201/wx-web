@@ -1,0 +1,61 @@
+version: '3.8'
+services:
+  wx-web-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wx-web-backend
+    working_dir: /app
+    command: python -u wx-web-backend/app/mqtt_to_db.py
+    environment:
+      - MQTT_BROKER_HOST=mqtt.local
+      - MQTT_BROKER_PORT=1883
+      - MQTT_BROKER_USER=mqtt
+      - MQTT_BROKER_PASSWORD=YOUR_PASSWORD
+      - MQTT_TOPIC=weather/loop
+      - SQLITE_PATH=/data/weather.db
+    volumes:
+      - /docker_data/wx-web/data:/data:rw
+    restart: unless-stopped
+  wx-web-graph-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wx-web-graph-generator
+    working_dir: /app
+    command: python -u wx-web-graph-generator/graph_generator.py
+    environment:
+      - SQLITE_PATH=/data/weather.db
+      - STATIC_DIR=/data/static
+    volumes:
+      - /docker_data/wx-web/data:/data:rw
+    restart: unless-stopped
+  wx-web-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wx-web-frontend
+    working_dir: /app
+    command: python -u wx-web-frontend/app.py
+    environment:
+      - SQLITE_PATH=/data/weather.db
+      - NOAA_Radar=KMVX
+    volumes:
+      - /docker_data/wx-web/data:/data:rw
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+  wx-web-explorer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wx-web-explorer
+    working_dir: /app
+    command: python -u wx-web-explorer/app.py
+    environment:
+      - SQLITE_PATH=/data/weather.db
+    volumes:
+      - /docker_data/wx-web/data:/data:rw
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
