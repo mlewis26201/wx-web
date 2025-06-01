@@ -1,5 +1,7 @@
 # Ignore all persistent and generated data
-/data/
+data/
+data/static/
+logs/
 # Ignore SQLite database
 /data/weather.db
 # Ignore Docker secrets for wx-web-alerter
