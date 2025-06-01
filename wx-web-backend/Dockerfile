@@ -1,12 +1,1 @@
-FROM python:3.11-slim
-
-WORKDIR /app
-
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY app/ ./app/
-
-VOLUME ["/data"]
-
-CMD ["python", "-u", "app/mqtt_to_db.py"]
+# This file has been removed. All services now use the root Dockerfile.

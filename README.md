@@ -9,6 +9,7 @@ A modern, containerized weather dashboard for real-time data, graphs, alerts, an
 - Customizable alerts with Pushover integration
 - Secure configuration using Docker secrets
 - Easy deployment with Docker Compose
+- Containers run as the invoking user for safe file permissions
 
 ## Directory Structure
 - `wx-web-backend/` — MQTT ingestion and database service
@@ -26,11 +27,12 @@ A modern, containerized weather dashboard for real-time data, graphs, alerts, an
    cd wx-web
    ```
 2. Create and edit the secrets files as needed (see below).
-3. Build and start all services:
+3. Build and start all services (ensure you pass your UID/GID for correct file permissions):
    ```bash
-   docker compose up --build
+   docker compose build --build-arg UID=$(id -u) --build-arg GID=$(id -g)
+   docker compose up
    ```
-4. Access the dashboard at [http://localhost:8080](http://localhost:8080) (or your configured port)
+4. Access the dashboard at [http://localhost:8099](http://localhost:8099) (or your configured port)
 
 ## Configuration with Docker Secrets
 All sensitive and user-editable settings are managed via Docker secrets files. Example secrets files:
@@ -46,7 +48,7 @@ All sensitive and user-editable settings are managed via Docker secrets files. E
 - `wx-web-frontend.secrets` (for frontend settings):
   ```
   NOAA_Radar=KMVX
-  FRONTEND_PORT=8080
+  FRONTEND_PORT=8099
   ```
 - `wx-web-alerter.secrets` (for Pushover API):
   ```
