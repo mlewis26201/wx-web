@@ -97,7 +97,7 @@ services:
       - wx-web-network
   wx-web-nginx:
     build:
-      context: .
+      context: ./wx-web-nginx
       dockerfile: nginx.Dockerfile
     container_name: wx-web-nginx
     ports:
@@ -108,6 +108,7 @@ services:
       - wx-web-alerter
     volumes:
       - ./logs/nginx:/var/log/nginx
+      - ./webstats:/webstats
     networks:
       - wx-web-network
   wx-web-goaccess:
@@ -118,6 +119,7 @@ services:
     volumes:
       - ./logs/nginx:/logs
       - ./webstats:/webstats
+      - ./goaccess.conf:/etc/goaccess/goaccess.conf:ro
     depends_on:
       - wx-web-nginx
     networks:

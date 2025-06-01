@@ -1,27 +1,56 @@
 from flask import Flask, render_template, jsonify, send_from_directory
 import sqlite3
 import os
+import shutil
 
 app = Flask(__name__, static_folder=None)
 DB_PATH = os.environ.get('SQLITE_PATH', '/data/weather.db')
 SECRETS_PATH = '/run/secrets/wx-web-frontend.secrets'
 
-# Load NOAA Radar and port from Docker secrets
+# Ensure style.css and favicon.svg are always present in /data/static at container start
+STATIC_SRC_DIR = '/app/wx-web-frontend/static'
+STATIC_DEST_DIR = '/data/static'
+
+def ensure_static_files():
+    try:
+        # Ensure the destination directory exists
+        os.makedirs(STATIC_DEST_DIR, exist_ok=True)
+        
+        # Copy style.css
+        style_src = os.path.join(STATIC_SRC_DIR, 'style.css')
+        style_dest = os.path.join(STATIC_DEST_DIR, 'style.css')
+        if os.path.exists(style_src):
+            shutil.copy2(style_src, style_dest)
+            print(f"[startup] Copied {style_src} to {style_dest}")
+        
+        # Copy favicon.svg
+        favicon_src = os.path.join(STATIC_SRC_DIR, 'favicon.svg')
+        favicon_dest = os.path.join(STATIC_DEST_DIR, 'favicon.svg')
+        if os.path.exists(favicon_src):
+            shutil.copy2(favicon_src, favicon_dest)
+            print(f"[startup] Copied {favicon_src} to {favicon_dest}")
+            
+    except Exception as e:
+        print(f"[startup] Could not ensure static files: {e}")
+
+ensure_static_files()
+
+# Load NOAA Radar from Docker secrets
 def load_frontend_secrets():
-    secrets = {'NOAA_Radar': 'KMVX', 'FRONTEND_PORT': '8080'}
+    secrets = {'NOAA_Radar': 'KMVX'}
     try:
         with open(SECRETS_PATH) as f:
             for line in f:
                 if '=' in line:
                     k, v = line.strip().split('=', 1)
-                    secrets[k] = v
+                    if k == 'NOAA_Radar':
+                        secrets[k] = v
     except Exception as e:
         print(f"Could not load frontend secrets: {e}")
     return secrets
 
 FRONTEND_SECRETS = load_frontend_secrets()
 NOAA_Radar = FRONTEND_SECRETS['NOAA_Radar']
-FRONTEND_PORT = int(FRONTEND_SECRETS['FRONTEND_PORT'])
 
 def get_latest_row():
     conn = sqlite3.connect(DB_PATH)
@@ -111,4 +140,4 @@ def favicon_root():
     return send_from_directory('/data/static', 'favicon.svg')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=FRONTEND_PORT)
+    app.run(host="0.0.0.0", port=8080)
