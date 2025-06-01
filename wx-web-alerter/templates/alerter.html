@@ -1,47 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <title>Weather Alert Setup</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Alerts</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/svg+xml" href="/css/favicon.svg">
+    <script>
+      function toggleTheme() {
+        const html = document.documentElement;
+        if (html.getAttribute('data-theme') === 'dark') {
+          html.setAttribute('data-theme', 'light');
+        } else {
+          html.setAttribute('data-theme', 'dark');
+        }
+      }
+    </script>
 </head>
 <body>
-    <nav>
-        <a href="http://localhost:8080">Dashboard</a> |
-        <a href="http://localhost:8081">Explorer</a> |
-        <a href="/">Alerts</a>
-    </nav>
-    <h1>Weather Alert Setup</h1>
-    <form method="post">
-        <label for="field">Field:</label>
-        <select name="field" id="field">
-            {% for field, friendly in fields %}
-            <option value="{{ field }}">{{ friendly }}</option>
+    <div class="theme-toggle">
+        <button onclick="toggleTheme()">Toggle Theme</button>
+    </div>
+    <h1>Weather Alerts</h1>
+    <div class="nav-links">
+        <a href="/">Dashboard</a>|
+        <a href="/explorer/">Explorer</a>|
+        <a href="/alerts/">Alerts</a>
+    </div>
+    <div class="container">
+        <form method="post">
+            <label for="field">Field:</label>
+            <select name="field" id="field">
+                {% for field, friendly in fields %}
+                <option value="{{ field }}">{{ friendly }}</option>
+                {% endfor %}
+            </select>
+            <label for="direction">Direction:</label>
+            <select name="direction" id="direction">
+                <option value="above">Above</option>
+                <option value="below">Below</option>
+            </select>
+            <label for="threshold">Threshold:</label>
+            <input type="number" step="any" name="threshold" id="threshold" required>
+            <button type="submit">Add Alert</button>
+        </form>
+        <h2>Active Alerts</h2>
+        <ul>
+            {% for alert in alerts %}
+            <li>{{ alert.field }} {{ alert.direction }} {{ alert.threshold }}</li>
             {% endfor %}
-        </select>
-        <label for="direction">Direction:</label>
-        <select name="direction" id="direction">
-            <option value="above">Above</option>
-            <option value="below">Below</option>
-        </select>
-        <label for="threshold">Threshold:</label>
-        <input type="number" step="any" name="threshold" id="threshold" required>
-        <button type="submit">Add Alert</button>
-    </form>
-    <h2>Active Alerts</h2>
-    <ul>
-        {% for alert in alerts %}
-        <li>{{ alert.field }} {{ alert.direction }} {{ alert.threshold }}</li>
-        {% endfor %}
-    </ul>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul class="flashes">
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
         </ul>
-      {% endif %}
-    {% endwith %}
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="flashes">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+    </div>
 </body>
 </html>

@@ -1,31 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Data Explorer</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
-    <link rel="stylesheet" href="/static/style.css">
-    <style>
-        body { font-family: Arial, sans-serif; background: #f5f6fa; color: #232a36; }
-        .container { max-width: none; width: 100vw; margin: 0; background: #fff; border-radius: 12px; box-shadow: 0 2px 16px #0001; padding: 2rem 0; }
-        h1 { text-align: center; color: #3887fa; }
-        label { font-weight: bold; }
-        .form-group { margin-bottom: 1.2rem; }
-        button { background: #3887fa; color: #fff; border: none; border-radius: 6px; padding: 0.7rem 1.5rem; font-size: 1rem; cursor: pointer; }
-        #plot-img { display: block; margin: 2rem auto; max-width: 98vw; min-width: 400px; }
-        nav { text-align: center; margin-bottom: 2rem; }
-        nav a { margin: 0 1rem; color: #3887fa; text-decoration: none; }
-        nav a:hover { text-decoration: underline; }
-    </style>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/svg+xml" href="/css/favicon.svg">
+    <script>
+      function toggleTheme() {
+        const html = document.documentElement;
+        if (html.getAttribute('data-theme') === 'dark') {
+          html.setAttribute('data-theme', 'light');
+        } else {
+          html.setAttribute('data-theme', 'dark');
+        }
+      }
+    </script>
 </head>
 <body>
-    <nav>
-        <a href="/">Dashboard</a> |
-        <a href="/explorer/">Explorer</a> |
+    <div class="theme-toggle">
+        <button onclick="toggleTheme()">Toggle Theme</button>
+    </div>
+    <h1>Weather Data Explorer</h1>
+    <div class="nav-links">
+        <a href="/">Dashboard</a>|
+        <a href="/explorer/">Explorer</a>|
         <a href="/alerts/">Alerts</a>
-    </nav>
+    </div>
     <div class="container">
-        <h1>Weather Data Explorer</h1>
         <form id="explorer-form" action="/explorer/plot" method="post">
             <div class="form-group">
                 <label for="field">Field:</label>
