@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Data Explorer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f6fa; color: #232a36; }
+        .container { max-width: none; width: 100vw; margin: 0; background: #fff; border-radius: 12px; box-shadow: 0 2px 16px #0001; padding: 2rem 0; }
+        h1 { text-align: center; color: #3887fa; }
+        label { font-weight: bold; }
+        .form-group { margin-bottom: 1.2rem; }
+        button { background: #3887fa; color: #fff; border: none; border-radius: 6px; padding: 0.7rem 1.5rem; font-size: 1rem; cursor: pointer; }
+        #plot-img { display: block; margin: 2rem auto; max-width: 98vw; min-width: 400px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Data Explorer</h1>
+        <form id="explorer-form" action="/explorer/plot" method="post">
+            <div class="form-group">
+                <label for="field">Field:</label>
+                <select id="field" name="field">
+                    {% for col in columns %}
+                    <option value="{{ col }}">{{ col }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="start">Start Date/Time:</label>
+                <input type="text" id="start" name="start" required>
+            </div>
+            <div class="form-group">
+                <label for="end">End Date/Time:</label>
+                <input type="text" id="end" name="end" required>
+            </div>
+            <button type="submit">Generate Graph</button>
+            <button type="button" id="download-btn">Download CSV</button>
+        </form>
+        <img id="plot-img" style="display:none; width:100vw; max-width:98vw; min-width:400px; margin-left:-2rem; margin-right:-2rem;" />
+        <div id="error" style="color:red;text-align:center;"></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <script>
+        flatpickr("#start", { enableTime: true, dateFormat: "Y-m-d H:i" });
+        flatpickr("#end", { enableTime: true, dateFormat: "Y-m-d H:i" });
+        document.getElementById('explorer-form').onsubmit = function(e) {
+            e.preventDefault();
+            var field = document.getElementById('field').value;
+            var start = document.getElementById('start').value;
+            var end = document.getElementById('end').value;
+            var img = document.getElementById('plot-img');
+            var error = document.getElementById('error');
+            img.style.display = 'none';
+            error.textContent = '';
+            fetch('/explorer/plot?width='+Math.floor(img.clientWidth||800), {
+                method: 'POST',
+                body: new URLSearchParams({field, start, end})
+            }).then(function(resp) {
+                if (!resp.ok) return resp.text().then(t => { throw new Error(t); });
+                return resp.blob();
+            }).then(function(blob) {
+                img.src = URL.createObjectURL(blob);
+                img.style.display = 'block';
+            }).catch(function(err) {
+                error.textContent = err.message;
+            });
+        };
+        document.getElementById('download-btn').onclick = function() {
+            var field = document.getElementById('field').value;
+            var start = document.getElementById('start').value;
+            var end = document.getElementById('end').value;
+            var params = new URLSearchParams({field, start, end});
+            var url = '/explorer/download';
+            fetch(url, {
+                method: 'POST',
+                body: params
+            }).then(function(resp) {
+                if (!resp.ok) return resp.text().then(t => { throw new Error(t); });
+                return resp.blob();
+            }).then(function(blob) {
+                var a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = field + '_' + start + '_to_' + end + '.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }).catch(function(err) {
+                document.getElementById('error').textContent = err.message;
+            });
+        };
+        window.addEventListener('resize', function() {
+            var img = document.getElementById('plot-img');
+            if (img.style.display !== 'none') {
+                document.getElementById('explorer-form').onsubmit(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snazzy Weather Webpage</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/svg+xml" href="/css/favicon.svg">
+    <script>
+      function toggleTheme() {
+        const html = document.documentElement;
+        if (html.getAttribute('data-theme') === 'dark') {
+          html.setAttribute('data-theme', 'light');
+        } else {
+          html.setAttribute('data-theme', 'dark');
+        }
+      }
+    </script>
+</head>
+<body>
+    <div class="theme-toggle">
+        <button onclick="toggleTheme()">Toggle Theme</button>
+    </div>
+    <h1 style="text-align:center; margin-top:0; color:var(--accent); font-size:2.2rem; font-weight:800; letter-spacing:1px;">Snazzy Weather Webpage</h1>
+    <div class="dashboard">
+        <div class="card" id="temperature">
+            <h2>Temperature</h2>
+            <div class="value">
+                <span id="outside-temp-value">--</span>
+                <span id="outside-temp-trend"></span>
+                <span style="font-size:0.9em;color:#aaa;">(out)</span>
+            </div>
+            <div class="value">
+                <span id="inside-temp-value">--</span>
+                <span id="inside-temp-trend"></span>
+                <span style="font-size:0.9em;color:#aaa;">(in)</span>
+            </div>
+            <div class="avg"><span class="avg-label">Outside Avg 1h:</span><span id="outside-temp-avg-1h">--</span></div>
+            <div class="avg"><span class="avg-label">Outside Avg 24h:</span><span id="outside-temp-avg-24h">--</span></div>
+            <div class="avg"><span class="avg-label">Inside Avg 1h:</span><span id="inside-temp-avg-1h">--</span></div>
+            <div class="avg"><span class="avg-label">Inside Avg 24h:</span><span id="inside-temp-avg-24h">--</span></div>
+            <div class="graph-thumb" style="margin-top:1rem;">
+                <a href="/graphs/temp_line_1h.png" target="_blank">
+                    <img src="/graphs/temp_line_1h.png" alt="Temperature 1h graph" style="width:100px;max-width:100%;border-radius:8px;box-shadow:0 2px 8px #0003;cursor:pointer;">
+                </a>
+            </div>
+            <div class="graph-links" style="margin-top:0.5rem;">
+                <a href="/graphs/temp_line_3h.png" target="_blank">3h</a> |
+                <a href="/graphs/temp_line_6h.png" target="_blank">6h</a> |
+                <a href="/graphs/temp_line_12h.png" target="_blank">12h</a> |
+                <a href="/graphs/temp_line_24h.png" target="_blank">24h</a>
+            </div>
+        </div>
+        <div class="card" id="wind">
+            <h2>Wind</h2>
+            <div class="value" id="wind-value">--</div>
+            <div class="avg"><span class="avg-label">Avg 1h:</span><span id="wind-avg-1h">--</span></div>
+            <div class="avg"><span class="avg-label">Avg 24h:</span><span id="wind-avg-24h">--</span></div>
+            <div class="graph-thumb" style="margin-top:1rem;">
+                <a href="/graphs/wind_vector_1h.png" target="_blank">
+                    <img src="/graphs/wind_vector_1h.png" alt="Wind 1h graph" style="width:100px;max-width:100%;border-radius:8px;box-shadow:0 2px 8px #0003;cursor:pointer;">
+                </a>
+            </div>
+            <div class="graph-links" style="margin-top:0.5rem;">
+                <a href="/graphs/wind_vector_3h.png" target="_blank">3h</a> |
+                <a href="/graphs/wind_vector_6h.png" target="_blank">6h</a> |
+                <a href="/graphs/wind_vector_12h.png" target="_blank">12h</a>
+            </div>
+        </div>
+        <div class="card" id="pressure">
+            <h2>Pressure</h2>
+            <div class="value">
+                <span id="pressure-value">--</span>
+                <span id="pressure-trend"></span>
+            </div>
+            <div class="avg"><span class="avg-label">Avg 1h:</span><span id="pressure-avg-1h">--</span></div>
+            <div class="avg"><span class="avg-label">Avg 24h:</span><span id="pressure-avg-24h">--</span></div>
+            <div class="graph-thumb" style="margin-top:1rem;">
+                <a href="/graphs/pressure_line_1h.png" target="_blank">
+                    <img src="/graphs/pressure_line_1h.png" alt="Pressure 1h graph" style="width:100px;max-width:100%;border-radius:8px;box-shadow:0 2px 8px #0003;cursor:pointer;">
+                </a>
+            </div>
+            <div class="graph-links" style="margin-top:0.5rem;">
+                <a href="/graphs/pressure_line_3h.png" target="_blank">3h</a> |
+                <a href="/graphs/pressure_line_6h.png" target="_blank">6h</a> |
+                <a href="/graphs/pressure_line_12h.png" target="_blank">12h</a>
+            </div>
+        </div>
+        <div class="card" id="humidity">
+            <h2>Humidity</h2>
+            <div class="value">
+                <span id="humidity-value">--</span>
+                <span id="humidity-trend"></span>
+            </div>
+            <div class="avg"><span class="avg-label">Avg 1h:</span><span id="humidity-avg-1h">--</span></div>
+            <div class="avg"><span class="avg-label">Avg 24h:</span><span id="humidity-avg-24h">--</span></div>
+            <div class="graph-thumb" style="margin-top:1rem;">
+                <a href="/graphs/humidity_line_1h.png" target="_blank">
+                    <img src="/graphs/humidity_line_1h.png" alt="Humidity 1h graph" style="width:100px;max-width:100%;border-radius:8px;box-shadow:0 2px 8px #0003;cursor:pointer;">
+                </a>
+            </div>
+            <div class="graph-links" style="margin-top:0.5rem;">
+                <a href="/graphs/humidity_line_3h.png" target="_blank">3h</a> |
+                <a href="/graphs/humidity_line_6h.png" target="_blank">6h</a> |
+                <a href="/graphs/humidity_line_12h.png" target="_blank">12h</a>
+            </div>
+        </div>
+        <div class="card" id="solar-rad">
+            <h2>Solar Radiation</h2>
+            <div class="value">
+                <span id="solar-rad-value">--</span>
+                <span id="solar-rad-trend"></span>
+            </div>
+            <div class="avg"><span class="avg-label">Avg 1h:</span><span id="solar-rad-avg-1h">--</span></div>
+            <div class="avg"><span class="avg-label">Avg 24h:</span><span id="solar-rad-avg-24h">--</span></div>
+            <div class="graph-thumb" style="margin-top:1rem;">
+                <a href="/graphs/solar_line_1h.png" target="_blank">
+                    <img src="/graphs/solar_line_1h.png" alt="Solar 1h graph" style="width:100px;max-width:100%;border-radius:8px;box-shadow:0 2px 8px #0003;cursor:pointer;">
+                </a>
+            </div>
+            <div class="graph-links" style="margin-top:0.5rem;">
+                <a href="/graphs/solar_line_3h.png" target="_blank">3h</a> |
+                <a href="/graphs/solar_line_6h.png" target="_blank">6h</a> |
+                <a href="/graphs/solar_line_12h.png" target="_blank">12h</a>
+            </div>
+        </div>
+        <div class="card" id="radar">
+            <h2>NOAA Radar</h2>
+            <div class="graph-thumb" style="margin-top:1rem;">
+                <a href="https://radar.weather.gov/ridge/standard/{{ radar_station }}_loop.gif" target="_blank">
+                    <img src="https://radar.weather.gov/ridge/standard/{{ radar_station }}_loop.gif" alt="NOAA Radar Loop" style="width:180px;max-width:100%;border-radius:8px;box-shadow:0 2px 8px #0003;cursor:pointer;">
+                </a>
+            </div>
+        </div>
+    </div>
+    <footer style="text-align:center; margin-top:2rem; font-size:0.9rem; color:#aaa;">
+        Data last received: {{ latest_timestamp }}
+    </footer>
+    <script>
+      fetch('/api/latest').then(r => r.json()).then(data => {
+        document.getElementById('outside-temp-value').textContent = data.outTemp_F + ' °F';
+        document.getElementById('inside-temp-value').textContent = data.inTemp_F + ' °F';
+        document.getElementById('solar-rad-value').textContent = data.maxSolarRad_Wpm2 + ' W/m²';
+        document.getElementById('pressure-value').textContent = data.pressure_inHg + ' inHg';
+        document.getElementById('humidity-value').textContent = data.outHumidity + ' %';
+        document.getElementById('wind-value').textContent = data.windSpeed_mph + ' mph';
+      });
+      fetch('/api/averages').then(function(r) { return r.json(); }).then(function(avg) {
+        document.getElementById('outside-temp-avg-1h').textContent = avg.outside_temp.avg_1h + ' °F';
+        document.getElementById('outside-temp-avg-24h').textContent = avg.outside_temp.avg_24h + ' °F';
+        document.getElementById('inside-temp-avg-1h').textContent = avg.inside_temp.avg_1h + ' °F';
+        document.getElementById('inside-temp-avg-24h').textContent = avg.inside_temp.avg_24h + ' °F';
+        document.getElementById('solar-rad-avg-1h').textContent = avg.solar_rad.avg_1h + ' W/m²';
+        document.getElementById('solar-rad-avg-24h').textContent = avg.solar_rad.avg_24h + ' W/m²';
+        document.getElementById('pressure-avg-1h').textContent = avg.pressure.avg_1h + ' inHg';
+        document.getElementById('pressure-avg-24h').textContent = avg.pressure.avg_24h + ' inHg';
+        document.getElementById('humidity-avg-1h').textContent = avg.humidity.avg_1h + ' %';
+        document.getElementById('humidity-avg-24h').textContent = avg.humidity.avg_24h + ' %';
+        document.getElementById('wind-avg-1h').textContent = avg.wind.avg_1h + ' mph';
+        document.getElementById('wind-avg-24h').textContent = avg.wind.avg_24h + ' mph';
+        // Trend arrows
+        function trendArrow(current, avg) {
+          if (current === '--' || avg === '--') return '';
+          if (parseFloat(current) > parseFloat(avg)) return '<span style="color:green;font-size:1em;vertical-align:middle;">⬆️</span>';
+          if (parseFloat(current) < parseFloat(avg)) return '<span style="color:red;font-size:1em;vertical-align:middle;">⬇️</span>';
+          return '';
+        }
+        document.getElementById('outside-temp-trend').innerHTML = trendArrow(
+          document.getElementById('outside-temp-value').textContent.split(' ')[0],
+          avg.outside_temp.avg_1h
+        );
+        document.getElementById('inside-temp-trend').innerHTML = trendArrow(
+          document.getElementById('inside-temp-value').textContent.split(' ')[0],
+          avg.inside_temp.avg_1h
+        );
+        document.getElementById('pressure-trend').innerHTML = trendArrow(
+          document.getElementById('pressure-value').textContent.split(' ')[0],
+          avg.pressure.avg_1h
+        );
+        document.getElementById('humidity-trend').innerHTML = trendArrow(
+          document.getElementById('humidity-value').textContent.split(' ')[0],
+          avg.humidity.avg_1h
+        );
+        document.getElementById('solar-rad-trend').innerHTML = trendArrow(
+          document.getElementById('solar-rad-value').textContent.split(' ')[0],
+          avg.solar_rad.avg_1h
+        );
+      });
+    </script>
+</body>
+</html>

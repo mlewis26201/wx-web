@@ -1,0 +1,2 @@
+paho-mqtt
+# Only paho-mqtt is needed for mqtt_to_db.py
