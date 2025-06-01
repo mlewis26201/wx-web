@@ -1,2 +1,4 @@
 # Ignore SQLite database
 /data/weather.db
+# Ignore Docker secrets for wx-web-alerter
+wx-web-alerter.secrets

@@ -57,3 +57,23 @@ services:
     volumes:
       - ./data:/data:rw
     restart: unless-stopped
+  wx-web-alerter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wx-web-alerter
+    working_dir: /app
+    command: python -u wx-web-alerter/app.py
+    environment:
+      - SQLITE_PATH=/data/weather.db
+    volumes:
+      - ./data:/data:rw
+    secrets:
+      - wx-web-alerter-secrets
+    ports:
+      - "8082:8082"
+    restart: unless-stopped
+
+secrets:
+  wx-web-alerter-secrets:
+    file: wx-web-alerter.secrets

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Alert Setup</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Weather Alert Setup</h1>
+    <form method="post">
+        <label for="field">Field:</label>
+        <select name="field" id="field">
+            {% for field, friendly in fields %}
+            <option value="{{ field }}">{{ friendly }}</option>
+            {% endfor %}
+        </select>
+        <label for="direction">Direction:</label>
+        <select name="direction" id="direction">
+            <option value="above">Above</option>
+            <option value="below">Below</option>
+        </select>
+        <label for="threshold">Threshold:</label>
+        <input type="number" step="any" name="threshold" id="threshold" required>
+        <button type="submit">Add Alert</button>
+    </form>
+    <h2>Active Alerts</h2>
+    <ul>
+        {% for alert in alerts %}
+        <li>{{ alert.field }} {{ alert.direction }} {{ alert.threshold }}</li>
+        {% endfor %}
+    </ul>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+</body>
+</html>
