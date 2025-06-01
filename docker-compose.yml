@@ -5,8 +5,8 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        HOST_UID: ${UID:-1000}
-        HOST_GID: ${GID:-1000}
+        HOST_UID: 1002
+        HOST_GID: 1002
     container_name: wx-web-backend
     working_dir: /app
     command: python -u wx-web-backend/app/mqtt_to_db.py
@@ -14,16 +14,19 @@ services:
       - SQLITE_PATH=/data/weather.db
     volumes:
       - ./data:/data:rw
+      - ./wx-web-backend.secrets:/run/secrets/wx-web-backend.secrets:ro
     secrets:
       - wx-web-backend-secrets
     restart: unless-stopped
+    networks:
+      - wx-web-network
   wx-web-graph-generator:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        HOST_UID: ${UID:-1000}
-        HOST_GID: ${GID:-1000}
+        HOST_UID: 1002
+        HOST_GID: 1002
     container_name: wx-web-graph-generator
     working_dir: /app
     command: python -u wx-web-graph-generator/graph_generator.py
@@ -33,13 +36,15 @@ services:
     volumes:
       - ./data:/data:rw
     restart: unless-stopped
+    networks:
+      - wx-web-network
   wx-web-frontend:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        HOST_UID: ${UID:-1000}
-        HOST_GID: ${GID:-1000}
+        HOST_UID: 1002
+        HOST_GID: 1002
     container_name: wx-web-frontend
     working_dir: /app
     command: python -u wx-web-frontend/app.py
@@ -47,18 +52,19 @@ services:
       - SQLITE_PATH=/data/weather.db
     volumes:
       - ./data:/data:rw
+      - ./wx-web-frontend.secrets:/run/secrets/wx-web-frontend.secrets:ro
     secrets:
       - wx-web-frontend-secrets
-    ports:
-      - "${FRONTEND_PORT:-8080}:8080"
     restart: unless-stopped
+    networks:
+      - wx-web-network
   wx-web-explorer:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        HOST_UID: ${UID:-1000}
-        HOST_GID: ${GID:-1000}
+        HOST_UID: 1002
+        HOST_GID: 1002
     container_name: wx-web-explorer
     working_dir: /app
     command: python -u wx-web-explorer/app.py
@@ -67,13 +73,15 @@ services:
     volumes:
       - ./data:/data:rw
     restart: unless-stopped
+    networks:
+      - wx-web-network
   wx-web-alerter:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        HOST_UID: ${UID:-1000}
-        HOST_GID: ${GID:-1000}
+        HOST_UID: 1002
+        HOST_GID: 1002
     container_name: wx-web-alerter
     working_dir: /app
     command: python -u wx-web-alerter/app.py
@@ -81,11 +89,39 @@ services:
       - SQLITE_PATH=/data/weather.db
     volumes:
       - ./data:/data:rw
+      - ./wx-web-alerter.secrets:/run/secrets/wx-web-alerter.secrets:ro
     secrets:
       - wx-web-alerter-secrets
-    ports:
-      - "8082:8082"
     restart: unless-stopped
+    networks:
+      - wx-web-network
+  wx-web-nginx:
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    container_name: wx-web-nginx
+    ports:
+      - "8099:8080"
+    depends_on:
+      - wx-web-frontend
+      - wx-web-explorer
+      - wx-web-alerter
+    volumes:
+      - ./logs/nginx:/var/log/nginx
+    networks:
+      - wx-web-network
+  wx-web-goaccess:
+    build:
+      context: .
+      dockerfile: goaccess.Dockerfile
+    container_name: wx-web-goaccess
+    volumes:
+      - ./logs/nginx:/logs
+      - ./webstats:/webstats
+    depends_on:
+      - wx-web-nginx
+    networks:
+      - wx-web-network
 
 secrets:
   wx-web-backend-secrets:
@@ -94,3 +130,7 @@ secrets:
     file: wx-web-alerter.secrets
   wx-web-frontend-secrets:
     file: wx-web-frontend.secrets
+
+networks:
+  wx-web-network:
+    driver: bridge

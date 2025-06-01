@@ -12,8 +12,8 @@ COPY wx-web-utils/ ./wx-web-utils/
 COPY data/static/ ./data/static/
 
 # Add a non-root user matching the host UID/GID
-ARG HOST_UID=1000
-ARG HOST_GID=1000
+ARG HOST_UID=1002
+ARG HOST_GID=1002
 RUN groupadd -g $HOST_GID appuser && \
     useradd -m -u $HOST_UID -g $HOST_GID appuser
 

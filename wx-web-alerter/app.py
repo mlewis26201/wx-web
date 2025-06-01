@@ -42,7 +42,8 @@ def get_fields():
     try:
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
-        c.execute('PRAGMA table_info(weather)')
+        # Use weather_history instead of weather
+        c.execute('PRAGMA table_info(weather_history)')
         fields = [row[1] for row in c.fetchall()]
         conn.close()
         return fields
@@ -58,14 +59,15 @@ def alert_watcher():
         try:
             conn = sqlite3.connect(DB_PATH)
             c = conn.cursor()
-            c.execute('SELECT id, * FROM weather ORDER BY id DESC LIMIT 1')
+            # Use weather_history instead of weather
+            c.execute('SELECT rowid, * FROM weather_history ORDER BY rowid DESC LIMIT 1')
             row = c.fetchone()
             conn.close()
             if row and (last_id is None or row[0] != last_id):
                 last_id = row[0]
                 for alert in alerts:
-                    field_idx = row.keys().index(alert['field']) if hasattr(row, 'keys') else None
-                    value = row[field_idx] if field_idx is not None else row[1:][get_fields().index(alert['field'])]
+                    # row[1:] skips rowid, fields[1:] matches columns
+                    value = row[1:][get_fields().index(alert['field'])]
                     if alert['direction'] == 'above' and value > alert['threshold']:
                         send_pushover(alert, value)
                     elif alert['direction'] == 'below' and value < alert['threshold']:

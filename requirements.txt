@@ -1,0 +1,6 @@
+# Unified requirements for all wx-web-* services
+flask
+jinja2
+paho-mqtt
+requests
+matplotlib

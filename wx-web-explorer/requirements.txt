@@ -1,2 +1,5 @@
-Flask
+flask
+jinja2
+paho-mqtt
+requests
 matplotlib
